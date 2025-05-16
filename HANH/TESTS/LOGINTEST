@@ -1,0 +1,54 @@
+package tests;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+import pages.Dashboard;
+import pages.LoginPage;
+
+import java.time.Duration;
+
+public class LoginTest {
+
+    private WebDriver driver;
+    private LoginPage loginPage;
+
+    @BeforeMethod
+    public void setUp() {
+        WebDriverManager.chromedriver().setup();
+        driver = new ChromeDriver();
+
+        driver.manage().window().maximize();
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+
+        driver.get("https://olms.codedao.io.vn");
+        loginPage = new LoginPage(driver);  // ✅ Tạo một lần ở đây
+    }
+
+    @Test
+    public void testValidLogin() {
+        loginPage.loginAs("testadmin", "test1234");
+
+        Dashboard dashboardPage = new Dashboard(driver);
+        Assert.assertTrue(dashboardPage.isUserLoggedIn(), "❌ Đăng nhập thất bại hoặc trang dashboard chưa load.");
+    }
+
+    @Test
+    public void testInvalidLogin() {
+        loginPage.loginAs("invalidUser", "wrongPassword");
+
+        String errorMessage = loginPage.getLoginErrorMessage();
+        Assert.assertTrue(errorMessage != null && !errorMessage.isEmpty(), "❌ Không hiển thị thông báo lỗi như mong đợi.");
+    }
+
+    @AfterMethod
+    public void tearDown() {
+        if (driver != null) {
+            driver.quit();
+        }
+    }
+}
