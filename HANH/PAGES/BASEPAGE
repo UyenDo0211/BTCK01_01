@@ -1,0 +1,65 @@
+package pages;
+
+import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
+
+public class BasePage {
+    protected WebDriver driver;
+    protected WebDriverWait wait;
+    protected Actions actions;
+
+    public BasePage(WebDriver driver) {
+        this.driver = driver; // ✅ Gán đúng giá trị từ tham số
+        this.wait = new WebDriverWait(this.driver, Duration.ofSeconds(10));
+        this.actions = new Actions(this.driver);
+    }
+
+    public WebElement find(By locator) {
+        return wait.until(ExpectedConditions.presenceOfElementLocated(locator));
+    }
+
+    public void click(By locator) {
+        wait.until(ExpectedConditions.elementToBeClickable(locator)).click();
+    }
+
+    public void type(By locator, String text) {
+        WebElement element = find(locator);
+        element.clear();
+        element.sendKeys(text);
+    }
+
+    public boolean isVisible(By locator) {
+        try {
+            return wait.until(ExpectedConditions.visibilityOfElementLocated(locator)).isDisplayed();
+        } catch (TimeoutException e) {
+            return false;
+        }
+    }
+    public void selectByVisibleText(By locator, String value)
+    {
+        WebElement dropdown =
+                wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+        new Select(dropdown).selectByVisibleText(value);
+    }
+
+    public void waitForVisibility(By locator) {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+
+    }
+
+    public void hover(By locator) {
+        WebElement element = find(locator);
+        actions.moveToElement(element).perform();
+    }
+
+    public void scrollTo(By locator) {
+        WebElement element = find(locator);
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);
+    }
+}
+
