@@ -1,0 +1,56 @@
+package tests;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+import pages.LoginPage;
+import pages.LophocPage;
+
+import java.time.Duration;
+
+public class LopHocTest {
+
+    private WebDriver driver;
+    private LophocPage lopHocPage;
+
+    @BeforeMethod
+    public void setUp() {
+        WebDriverManager.chromedriver().setup();
+        driver = new ChromeDriver();
+
+        driver.manage().window().maximize();
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+
+        driver.get("https://olms.codedao.io.vn");
+
+        LoginPage loginPage = new LoginPage(driver);
+        loginPage.loginAs("testadmin", "test1234");
+
+        lopHocPage = new LophocPage(driver);
+    }
+
+    @Test
+    public void testThemLopHocThanhCong() {
+        lopHocPage.openLopHocPage();
+
+        String tenLop = "Lớp Tự Động " + System.currentTimeMillis();
+        String moTa = "30";
+
+        lopHocPage.themLopHoc(tenLop, moTa);
+
+        boolean daThem = lopHocPage.kiemTraLopHocDaThem(tenLop);
+        Assert.assertTrue(daThem, "❌ Không tìm thấy lớp học vừa được thêm.");
+    }
+
+    @AfterMethod
+    public void tearDown() {
+        if (driver != null) {
+            driver.quit();
+        }
+    }
+}
+
