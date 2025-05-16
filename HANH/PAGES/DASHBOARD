@@ -1,0 +1,46 @@
+package pages;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+
+public class Dashboard extends BasePage {
+
+    private final By userProfileIcon = By.cssSelector(".user-avatar"); // hoặc ID thực tế
+    private System Sytem;
+
+    public Dashboard(WebDriver driver) {
+        super(driver);
+        this.driver = driver;
+    }
+    private By title = By.xpath("(//h2)[1]");;
+    private By MenuTrangchu = By.xpath("(//span) [4]");;
+    private String url= "/dashboard";
+
+    public boolean verifyUrl()
+    {
+        Sytem.out.println(driver.getCurrentUrl());
+        Sytem.out.println(url);
+        return driver.getCurrentUrl().contains(url);
+
+    }
+
+    public boolean isUserLoggedIn() {
+        return isVisible(userProfileIcon);  // biểu tượng avatar, tên người dùng, hoặc tiêu đề dashboard
+    }
+
+    public By getTitle() {
+        return title;
+    }
+
+    public void setTitle(By title) {
+        this.title = title;
+    }
+
+    public By getMenuTrangchu() {
+        return MenuTrangchu;
+    }
+
+    public void setMenuTrangchu(By menuTrangchu) {
+        MenuTrangchu = menuTrangchu;
+    }
+}
