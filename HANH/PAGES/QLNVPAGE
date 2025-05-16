@@ -1,0 +1,94 @@
+package pages;
+
+import io.qameta.allure.Step;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+
+public class QLNVPage extends BasePage {
+
+    public QLNVPage(WebDriver driver) {
+        super(driver);
+    }
+
+    // Locators chính xác (cập nhật lại cú pháp bị sai)
+    private By menuCauhinh = By.xpath("//span[text()='Cấu hình']");
+    private By employeeTab = By.xpath("//p[text()='Quản lý nhân viên']");
+    private By buttonThemNV = By.xpath("//button[text()='Thêm nhân viên']");
+    private By hovatenInput = By.xpath("(//input)[3]");
+    private By tenInput = By.xpath("(//input)[4]");
+    private By phongbanclick = By.xpath("(//input)[13]");
+    private By IDInput = By.xpath("(//input)[17]");
+    private By matkhauInput = By.xpath("(//input)[18]");
+    private By phoneInput = By.xpath("(//input)[19]");
+    private By luuButton = By.xpath("(//button)[40]");
+    private By huyButton = By.xpath("(//button)[39]");
+    private By confirmDeleteButton = By.xpath("//button[contains(text(),'Đồng ý') or contains(text(),'Yes')]");
+
+    // Dynamic locators
+    private String rowXpath = "//tr[td[contains(text(),'%s')]]";
+    private String editButtonXpath = rowXpath + "//button[contains(@title,'Sửa')]";
+    private String deleteButtonXpath = rowXpath + "//button[contains(@title,'Xoá') or contains(@title,'Delete')]";
+
+    @Step("Truy cập trang Quản lý nhân viên")
+    public void goToEmployeePage() {
+        click(menuCauhinh);
+        click(employeeTab);
+    }
+
+    @Step("Thêm nhân viên: Họ và tên = {0}, ID = {1}, Mật khẩu = {2}, SĐT = {3}")
+    public void addNewEmployee(String hoten, String id, String matkhau, String phone) {
+        click(buttonThemNV);
+        type(hovatenInput, hoten);
+        type(IDInput, id);
+        type(matkhauInput, matkhau);
+        type(phoneInput, phone); // ✅ đã truyền đúng biến phone
+        click(luuButton);
+    }
+
+    @Step("Sửa tên nhân viên từ {0} thành {1}")
+    public void editEmployee(String oldName, String newName) {
+        By editBtn = By.xpath(String.format(editButtonXpath, oldName));
+        click(editBtn);
+        clear(hovatenInput);
+        type(hovatenInput, newName);
+        click(luuButton);
+    }
+
+    @Step("Xóa nhân viên tên {0}")
+    public void deleteEmployee(String name) {
+        By deleteBtn = By.xpath(String.format(deleteButtonXpath, name));
+        click(deleteBtn);
+        click(confirmDeleteButton);
+    }
+
+    @Step("Kiểm tra nhân viên tên {0} có tồn tại không")
+    public boolean isEmployeePresent(String name) {
+        try {
+            return isDisplayed(By.xpath(String.format(rowXpath, name)));
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    // Helper methods nếu BasePage không có sẵn
+    protected void clear(By locator) {
+        driver.findElement(locator).clear();
+    }
+
+    protected boolean isDisplayed(By locator) {
+        try {
+            return driver.findElement(locator).isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    // Getter (nếu cần)
+    public By getMenuCauhinh() {
+        return menuCauhinh;
+    }
+
+    public By getButtonThemNV() {
+        return buttonThemNV;
+    }
+}
