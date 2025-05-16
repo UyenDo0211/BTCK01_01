@@ -1,0 +1,70 @@
+package tests;
+
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
+import org.openqa.selenium.WebDriver;
+import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+import pages.LoginPage;
+import pages.QLNVPage;
+import utils.ConfigReader;
+import utils.Driverfactory;
+
+@Epic("Quản lý nhân viên")
+@Feature("Thêm, sửa, xóa nhân viên")
+public class QLNVTest {
+    private QLNVPage employeePage;
+
+    @BeforeMethod
+    public void setUp() {
+        Driverfactory DriverFactory = null;
+        WebDriver driver = DriverFactory.getDriver();
+        driver.get(ConfigReader.get("url"));
+
+        // Đăng nhập
+        LoginPage loginPage = new LoginPage(driver);
+        loginPage.loginAs(ConfigReader.get("username"), ConfigReader.get("password"));
+
+        // Đi tới trang QLNV
+        employeePage = new QLNVPage(driver);
+        employeePage.goToEmployeePage();
+    }
+    @Test(description = "Thêm nhân viên mới")
+    @Severity(SeverityLevel.CRITICAL)
+    public void testAddEmployee() {
+        String name = "VUONG THUY HANH";
+        String id = "hanh@example.com";       // ✅ giả lập ID
+        String password = "matkhau123";       // ✅ mật khẩu giả
+        String phone = "0900000000";          // ✅ số điện thoại
+
+        employeePage.addNewEmployee(name, id, password, phone);
+        Assert.assertTrue(employeePage.isEmployeePresent(name), "Không tìm thấy nhân viên sau khi thêm.");
+    }
+
+
+    @Test(description = "Sửa tên nhân viên")
+    @Severity(SeverityLevel.NORMAL)
+    public void testEditEmployee() {
+        String oldName = "VUONG THUY HANH";
+        String newName = "TRẦN THUÝ HANH";
+        employeePage.editEmployee(oldName, newName);
+        Assert.assertTrue(employeePage.isEmployeePresent(newName), "Không tìm thấy nhân viên sau khi sửa.");
+    }
+
+    @Test(description = "Xóa nhân viên")
+    @Severity(SeverityLevel.CRITICAL)
+    public void testDeleteEmployee() {
+        String nameToDelete = "TRẦN THUÝ HANH";
+        employeePage.deleteEmployee(nameToDelete);
+        Assert.assertFalse(employeePage.isEmployeePresent(nameToDelete), "Nhân viên vẫn còn sau khi xóa.");
+    }
+
+    @AfterMethod
+    public void tearDown() {
+        Driverfactory.quitDriver();
+    }
+}
