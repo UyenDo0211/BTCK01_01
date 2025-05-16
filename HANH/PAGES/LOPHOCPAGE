@@ -1,0 +1,40 @@
+package pages;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+
+public class LophocPage extends BasePage {
+
+    // Locators
+    private final By menuDaoTao = By.xpath("(//span)[7]");
+    private final By submenuLopHoc = By.xpath("(//span)[7]");
+    private final By buttonThemLop = By.xpath ("(//button) [3]");
+    private final By tenLopInput = By.xpath("(//input)[10]");
+    private final By dotuoiInput = By.xpath("(//input [contains(@class, '1o6z5ng')]) [2]");
+    private final By luuButton = By.xpath("//button [text()='Lưu']");
+    private WebDriver drive;
+
+    private Object Assert;
+
+    public LophocPage(WebDriver driver) {
+        super(driver);
+    }
+
+    public void openLopHocPage()
+    {
+        hover(menuDaoTao);
+       drive.findElement(submenuLopHoc).click();
+    }
+
+    public void themLopHoc(String tenLop, String moTa) {
+        click(buttonThemLop);
+        type(tenLopInput, tenLop);
+        type(dotuoiInput, moTa);
+        click(luuButton);
+    }
+
+    public boolean kiemTraLopHocDaThem(String tenLop) {
+        By row = By.xpath("//table//td[contains(text(), '" + tenLop + "')]");
+        return isVisible(row);
+    }
+}
